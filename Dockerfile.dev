@@ -1,0 +1,14 @@
+FROM maven:ibmjava-alpine as build
+
+COPY . /seata-dubbo
+RUN mv /seata-dubbo/.m2 /root/.m2
+
+WORKDIR /seata-dubbo/dubbo
+
+RUN mvn clean package
+
+FROM openjdk:8u302-jre-slim
+
+COPY --from=build /seata-dubbo/dubbo/target /seata-dubbo
+
+WORKDIR /seata-dubbo

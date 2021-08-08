@@ -1,3 +1,5 @@
+USE seata_db;
+
 DROP TABLE IF EXISTS `storage_tbl`;
 CREATE TABLE `storage_tbl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

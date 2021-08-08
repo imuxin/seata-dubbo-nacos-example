@@ -25,11 +25,11 @@ import org.springframework.jdbc.core.RowMapper;
 /**
  * The type Order.
  */
-public class Order implements Serializable, RowMapper<Order> {
+public class Account implements Serializable, RowMapper<Account> {
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = -4216164480577669156L;
+	private static final long serialVersionUID = -9187977528272637949L;
 	/**
      * The Id.
      */
@@ -39,38 +39,26 @@ public class Order implements Serializable, RowMapper<Order> {
      */
     public String userId;
     /**
-     * The Commodity code.
-     */
-    public String commodityCode;
-    /**
-     * The Count.
-     */
-    public int count;
-    /**
      * The Money.
      */
     public int money;
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "Account{" +
             "id=" + id +
             ", userId='" + userId + '\'' +
-            ", commodityCode='" + commodityCode + '\'' +
-            ", count=" + count +
             ", money=" + money +
             '}';
     }
 
 	@Override
-	public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
-		Order order = new Order();
-		order.id = rs.getLong("id");
-		order.userId = rs.getString("user_id");
-		order.commodityCode = rs.getString("commodity_code");
-		order.count = rs.getInt("count");
-		order.money = rs.getInt("money");
-
-		return order;
+	public Account mapRow(ResultSet rs, int rowNum) throws SQLException {
+		Account account = new Account();
+		account.id = rs.getLong("id");
+		account.userId = rs.getString("user_id");
+		account.money = rs.getInt("money");
+		
+		return account;
 	}
 }

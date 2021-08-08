@@ -16,6 +16,12 @@
 
 package io.seata.samples.dubbo.service;
 
+import java.util.List;
+
+import io.seata.samples.dubbo.Account;
+import io.seata.samples.dubbo.Order;
+import io.seata.samples.dubbo.Storage;
+
 /**
  * The interface Business service.
  */
@@ -29,4 +35,7 @@ public interface BusinessService {
      * @param orderCount    订购数量
      */
     void purchase(String userId, String commodityCode, int orderCount);
+    List<Account> listAccount();
+    List<Order> listOrder();
+    List<Storage> listStorage();
 }

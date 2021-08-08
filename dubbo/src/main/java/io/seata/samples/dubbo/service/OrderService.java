@@ -16,6 +16,8 @@
 
 package io.seata.samples.dubbo.service;
 
+import java.util.List;
+
 import io.seata.samples.dubbo.Order;
 
 /**
@@ -31,4 +33,5 @@ public interface OrderService {
      * @return 生成的订单 order
      */
     Order create(String userId, String commodityCode, int orderCount);
+    List<Order> list();
 }

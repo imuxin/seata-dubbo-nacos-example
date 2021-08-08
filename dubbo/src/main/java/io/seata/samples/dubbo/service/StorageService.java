@@ -16,6 +16,10 @@
 
 package io.seata.samples.dubbo.service;
 
+import java.util.List;
+
+import io.seata.samples.dubbo.Storage;
+
 /**
  * The interface Storage service.
  */
@@ -28,4 +32,5 @@ public interface StorageService {
      * @param count         扣减数量
      */
     void deduct(String commodityCode, int count);
+    List<Storage> list();
 }

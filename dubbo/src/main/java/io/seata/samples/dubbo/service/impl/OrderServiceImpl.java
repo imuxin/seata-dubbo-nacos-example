@@ -19,17 +19,19 @@ package io.seata.samples.dubbo.service.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 import io.seata.core.context.RootContext;
-import io.seata.samples.dubbo.Order;
-import io.seata.samples.dubbo.service.AccountService;
-import io.seata.samples.dubbo.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+
+import io.seata.samples.dubbo.Order;
+import io.seata.samples.dubbo.service.AccountService;
+import io.seata.samples.dubbo.service.OrderService;
 
 /**
  * Please add the follow VM arguments:
@@ -85,6 +87,16 @@ public class OrderServiceImpl implements OrderService {
         LOGGER.info("Order Service End ... Created " + order);
 
         return order;
+    }
+    
+    @Override
+    public List<Order> list() {
+    	LOGGER.info("List Order Begin");
+
+    	List<Order> orders = jdbcTemplate.query("select * from order_tbl", new Order());
+
+    	LOGGER.info("List Order End");
+    	return orders;
     }
 
     /**

@@ -16,11 +16,15 @@
 
 package io.seata.samples.dubbo.service.impl;
 
+import java.util.List;
+
 import io.seata.core.context.RootContext;
-import io.seata.samples.dubbo.service.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import io.seata.samples.dubbo.Storage;
+import io.seata.samples.dubbo.service.StorageService;
 
 /**
  * Please add the follow VM arguments:
@@ -53,6 +57,16 @@ public class StorageServiceImpl implements StorageService {
             new Object[] {count, commodityCode});
         LOGGER.info("Storage Service End ... ");
 
+    }
+    
+    @Override
+    public List<Storage> list() {
+    	LOGGER.info("List Storage Begin");
+
+    	List<Storage> storages = jdbcTemplate.query("select * from storage_tbl", new Storage());
+
+    	LOGGER.info("List Storage End");
+    	return storages;
     }
 
 }

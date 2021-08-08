@@ -26,10 +26,10 @@
 
     <bean name="storageDataSource" class="com.alibaba.druid.pool.DruidDataSource"
           init-method="init" destroy-method="close">
-        <property name="url" value="${jdbc.storage.url}"/>
-        <property name="username" value="${jdbc.storage.username}"/>
-        <property name="password" value="${jdbc.storage.password}"/>
-        <property name="driverClassName" value="${jdbc.storage.driver}"/>
+        <property name="url" value="jdbc:mysql://seata-db:3306/seata_db?allowPublicKeyRetrieval=true&amp;useSSL=false"/>
+        <property name="username" value="seata"/>
+        <property name="password" value="seata"/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="initialSize" value="0" />
         <property name="maxActive" value="180" />
         <property name="minIdle" value="0" />
@@ -55,19 +55,19 @@
     </bean>
 
     <dubbo:application name="dubbo-demo-storage-service"  >
-        <dubbo:parameter key="qos.enable" value="false"/>
+        <!-- <dubbo:parameter key="qos.enable" value="false"/> -->
     </dubbo:application>
-    <dubbo:registry address="multicast://224.5.6.7:1234?unicast=false" />
+    <!-- <dubbo:registry address="multicast://224.5.6.7:1234?unicast=false" /> -->
     <!--support etcd -->
     <!--<dubbo:registry address="etcd3://127.0.0.1:2379/org.apache.dubbo.registry.RegistryService" />-->
     <!--support zk-->
     <!--<dubbo:registry address="zookeeper://localhost:2181" />-->
     <!--support nacos-->
-    <!--<dubbo:registry address="nacos://127.0.0.1:8848"/> -->
+    <dubbo:registry address="nacos://nacos:8848"/>
     <dubbo:protocol name="dubbo" port="20882" />
-    <dubbo:service interface="io.seata.samples.dubbo.service.StorageService" ref="service" timeout="10000"/>
+    <dubbo:service interface="io.seata.samples.dubbo.service.StorageService" ref="storageService" timeout="10000" version="1.0.0"/>
 
-    <bean id="service" class="io.seata.samples.dubbo.service.impl.StorageServiceImpl">
+    <bean id="storageService" class="io.seata.samples.dubbo.service.impl.StorageServiceImpl">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 

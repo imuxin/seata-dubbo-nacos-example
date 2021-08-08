@@ -1,0 +1,120 @@
+version: "3.9" # optional since v1.27.0
+
+services:
+  nacos:
+    # REF: https://hub.docker.com/r/nacos/nacos-server
+    image: nacos/nacos-server:2.0.3-slim
+    environment:
+      - MODE=standalone
+    networks:
+      - seata-dubbo
+    ports:
+      - "8848:8848"
+  seata-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=seata
+      - MYSQL_DATABASE=seata_db
+      - MYSQL_USER=seata
+      - MYSQL_PASSWORD=seata
+    volumes:
+      - ./dubbo/src/main/resources/sql/dubbo_biz.sql:/docker-entrypoint-initdb.d/dubbo_biz.sql
+      - ./dubbo/src/main/resources/sql/undo_log.sql:/docker-entrypoint-initdb.d/undo_log.sql
+    ports:
+      - "3306"
+    networks:
+      - seata-dubbo
+  seata-server:
+    image: slic/seata-server:1.4.2
+    command:
+      - /bin/bash
+      - -c
+      - |
+        sleep 60s
+        bash bin/nacos-config.sh -h nacos -p 8848 -g SEATA_GROUP -u nacos -w nacos
+        bash bin/seata-server.sh
+    volumes:
+      - ./etc/seata-server/nacos-config.sh:/seata/seata-server-1.4.2/bin/nacos-config.sh
+      - ./etc/seata-server/config.txt:/seata/seata-server-1.4.2/config.txt
+      - ./etc/seata-server/registry.conf:/seata/seata-server-1.4.2/conf/registry.conf
+    links:
+      - nacos
+    ports:
+      - "8091"
+      - "9898" # metrics uri: http://tc-server-ip:9898/metrics
+    depends_on:
+      - nacos
+    networks:
+      - seata-dubbo
+  storage:
+    image: slic/seata-dubbo:latest
+    command:
+      - /bin/bash
+      - -c
+      - |
+        sleep 80s
+        java -cp seata-samples-dubbo-1.1.0.jar io.seata.samples.dubbo.starter.DubboStorageServiceStarter
+    links:
+      - nacos
+      - seata-db
+    networks:
+      - seata-dubbo
+  account:
+    image: slic/seata-dubbo:latest
+    command:
+      - /bin/bash
+      - -c
+      - |
+        sleep 80s
+        java -cp seata-samples-dubbo-1.1.0.jar io.seata.samples.dubbo.starter.DubboAccountServiceStarter
+    links:
+      - nacos
+      - seata-db
+    networks:
+      - seata-dubbo
+  order:
+    image: slic/seata-dubbo:latest
+    command:
+      - /bin/bash
+      - -c
+      - |
+        sleep 80s
+        java -cp seata-samples-dubbo-1.1.0.jar io.seata.samples.dubbo.starter.DubboOrderServiceStarter
+    links:
+      - nacos
+      - seata-db
+    depends_on:
+      - account
+    networks:
+      - seata-dubbo
+  business:
+    image: slic/seata-dubbo:latest
+    command:
+      - /bin/bash
+      - -c
+      - |
+        sleep 80s
+        java -cp seata-samples-dubbo-1.1.0.jar io.seata.samples.dubbo.starter.DubboBusinessWebStarter
+    ports:
+      - "8080:8080"
+    links:
+      - nacos
+      - seata-db
+    depends_on:
+      - account
+      - storage
+      - order
+    networks:
+      - seata-dubbo
+  # web:
+  #   image: todo
+  # prometheus:
+  #   links:
+  #     - seata-server
+  # grafana:
+  #   links:
+  #     - todo
+networks:
+  seata-dubbo:
+    driver: bridge
+    name: "seata-dubbo"

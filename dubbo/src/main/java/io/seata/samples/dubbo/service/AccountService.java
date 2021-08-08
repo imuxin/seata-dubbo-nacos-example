@@ -16,6 +16,10 @@
 
 package io.seata.samples.dubbo.service;
 
+import java.util.List;
+
+import io.seata.samples.dubbo.Account;
+
 /**
  * The interface Account service.
  */
@@ -28,4 +32,5 @@ public interface AccountService {
      * @param money  扣款金额
      */
     void debit(String userId, int money);
+    List<Account> list();
 }

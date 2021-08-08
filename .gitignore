@@ -29,6 +29,7 @@ target/
 *.tar
 *.tar.gz
 *.class
+*.m2
 
 # eclipse ignore
 .settings/
@@ -62,3 +63,5 @@ Thumbs.db
 */.idea/
 */.mvn/
 */target/
+
+.m2/

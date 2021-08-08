@@ -25,19 +25,15 @@ import org.springframework.jdbc.core.RowMapper;
 /**
  * The type Order.
  */
-public class Order implements Serializable, RowMapper<Order> {
-    /**
+public class Storage implements Serializable, RowMapper<Storage> {
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4216164480577669156L;
+	private static final long serialVersionUID = -3442050639700676626L;
 	/**
      * The Id.
      */
     public long id;
-    /**
-     * The User id.
-     */
-    public String userId;
     /**
      * The Commodity code.
      */
@@ -46,31 +42,23 @@ public class Order implements Serializable, RowMapper<Order> {
      * The Count.
      */
     public int count;
-    /**
-     * The Money.
-     */
-    public int money;
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "Account{" +
             "id=" + id +
-            ", userId='" + userId + '\'' +
             ", commodityCode='" + commodityCode + '\'' +
             ", count=" + count +
-            ", money=" + money +
             '}';
     }
 
 	@Override
-	public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
-		Order order = new Order();
-		order.id = rs.getLong("id");
-		order.userId = rs.getString("user_id");
-		order.commodityCode = rs.getString("commodity_code");
-		order.count = rs.getInt("count");
-		order.money = rs.getInt("money");
+	public Storage mapRow(ResultSet rs, int rowNum) throws SQLException {
+		Storage storage = new Storage();
+		storage.id = rs.getLong("id");
+		storage.commodityCode = rs.getString("commodity_code");
+		storage.count = rs.getInt("count");
 
-		return order;
+		return storage;
 	}
 }

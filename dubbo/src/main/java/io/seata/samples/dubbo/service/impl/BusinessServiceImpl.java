@@ -16,13 +16,20 @@
 
 package io.seata.samples.dubbo.service.impl;
 
+import java.util.List;
+
 import io.seata.core.context.RootContext;
-import io.seata.samples.dubbo.service.BusinessService;
-import io.seata.samples.dubbo.service.OrderService;
-import io.seata.samples.dubbo.service.StorageService;
 import io.seata.spring.annotation.GlobalTransactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.seata.samples.dubbo.Account;
+import io.seata.samples.dubbo.Order;
+import io.seata.samples.dubbo.Storage;
+import io.seata.samples.dubbo.service.BusinessService;
+import io.seata.samples.dubbo.service.AccountService;
+import io.seata.samples.dubbo.service.OrderService;
+import io.seata.samples.dubbo.service.StorageService;
 
 /**
  * Please add the follow VM arguments:
@@ -36,6 +43,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     private StorageService storageService;
     private OrderService orderService;
+    private AccountService accountService;
 
     @Override
     @GlobalTransactional(timeoutMills = 300000, name = "dubbo-demo-tx")
@@ -45,6 +53,21 @@ public class BusinessServiceImpl implements BusinessService {
         orderService.create(userId, commodityCode, orderCount);
         //throw new RuntimeException("xxx");
 
+    }
+    
+    @Override
+    public List<Account> listAccount() {
+    	return accountService.list();
+    }
+    
+    @Override
+    public List<Order> listOrder() {
+    	return orderService.list();
+    }
+    
+    @Override
+    public List<Storage> listStorage() {
+    	return storageService.list();
     }
 
     /**
@@ -63,6 +86,15 @@ public class BusinessServiceImpl implements BusinessService {
      */
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
+    }
+    
+    /**
+     * Sets account service.
+     *
+     * @param accountService the account service
+     */
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
     }
 
 }

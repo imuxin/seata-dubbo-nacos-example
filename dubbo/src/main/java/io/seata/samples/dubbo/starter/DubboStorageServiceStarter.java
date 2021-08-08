@@ -32,7 +32,7 @@ public class DubboStorageServiceStarter {
     public static void main(String[] args) {
         ClassPathXmlApplicationContext storageContext = new ClassPathXmlApplicationContext(
             new String[]{"spring/dubbo-storage-service.xml"});
-        storageContext.getBean("service");
+        storageContext.getBean("storageService");
         JdbcTemplate storageJdbcTemplate = (JdbcTemplate) storageContext.getBean("jdbcTemplate");
         storageJdbcTemplate.update("delete from storage_tbl where commodity_code = 'C00321'");
         storageJdbcTemplate.update("insert into storage_tbl(commodity_code, count) values ('C00321', 100)");
