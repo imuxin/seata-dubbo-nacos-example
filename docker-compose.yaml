@@ -110,6 +110,8 @@ services:
     image: nginx:1.21.1-alpine
     links:
       - business
+      - prometheus
+      - grafana
     volumes:
       - ./web/index.html:/usr/share/nginx/html/index.html
       - ./etc/web/nginx.conf:/etc/nginx/conf.d/default.conf
@@ -122,14 +124,28 @@ services:
     volumes:
       - ./etc/prometheus/config.yaml:/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090"
+      - "9090"
     links:
       - seata-server
     networks:
       - seata-dubbo
-  # grafana:
-  #   links:
-  #     - todo
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+      - --web.external-url=/prometheus/
+      - --web.route-prefix=/prometheus/
+  grafana:
+    image: grafana/grafana:8.1.0
+    ports:
+      - "3000"
+    links:
+      - prometheus
+    volumes:
+      - ./etc/grafana/grafana.ini:/etc/grafana/grafana.ini
+    networks:
+      - seata-dubbo
 networks:
   seata-dubbo:
     driver: bridge
