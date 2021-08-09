@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="shortcut icon" href="http://seata.io/img/seata_logo_small.jpeg"/>
+
+    <title>Seata dubbo example</title>
+  </head>
+  <body>
+    <div class="container">
+      <div style="text-align: center;"><h1>Seata dubbo example</h1></div>
+      <div class="row">
+        <div class="col-4">
+          <h2>Business</h2>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="userID" placeholder="name@example.com">
+            <label for="floatingInput">User ID</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="commodityCode" placeholder="Password">
+            <label for="floatingPassword">Commodity Code</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="orderCount" placeholder="Password">
+            <label for="floatingPassword">Order Count</label>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3" onclick="commitOrder()">commit</button>
+          </div>
+        </div>
+        <div class="col-8">
+          <h2>Account</h2>
+          <table class="table" id="account-table"></table>
+          <h2>Storage</h2>
+          <table class="table" id="storage-table"></table>
+          <h2>Order</h2>
+          <table class="table" id="order-table"></table>
+        </div>
+      </div>
+
+
+
+
+      <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+        <div id="toastMsg" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <img src="http://seata.io/img/seata_logo_small.jpeg" class="img-thumbnail" style="width: 25px;" alt="">
+            <strong class="me-auto" id="toast-title"></strong>
+            <small id="toast-resp"></small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+    -->
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
+    <script>
+      function showMSG(title, mark, msg) {
+        $("#toast-title").text(title);
+        $("#toast-resp").text(mark);
+        $(".toast-body").text(msg);
+        var toast = new bootstrap.Toast($("#toastMsg"), {
+          delay: 2000,
+        });
+        toast.show()
+      }
+
+      function tableRender(raws, table) {
+        table.empty();
+        if (raws.length === 0) {
+          let noData = `
+          <div class="alert alert-secondary" role="alert">
+           There is no order here.
+          </div>
+          `
+          table.append(noData);
+          return
+        }
+
+        let thead = $(`<thead></thead>`);
+        let tr = $(`<tr><th scope="col">#</td></tr>`);
+        Object.keys(raws[0]).forEach((item, _) => {
+          tr.append(`<th scope="col">${item}</td>`);
+        });
+        thead.append(tr);
+
+        let tbody = $(`<tbody></tbody>`);
+        raws.forEach((item, index) => {
+          let tr = $(`<tr></tr>`);
+          let rowNum = index + 1;
+          tr.append(`<th scope="row">${rowNum}</th>`)
+          for (let column in item) {
+            let columnData = item[column];
+            tr.append(`<td>${columnData}</td>`);
+          }
+          tbody.append(tr);
+        });
+        table.append(thead);
+        table.append(tbody);
+      }
+
+      function commitOrder(e) {
+        let userID = $("input#userID").val();
+        let commodityCode = $("input#commodityCode").val();
+        let orderCount = $("input#orderCount").val();
+        $.post(`/api/v1/doBusiness?userId=${userID}&commodityCode=${commodityCode}&orderCount=${orderCount}`)
+          .done(function(){
+            showMSG("commitOrder", "success", "Order commit success.");
+            refresh();
+          })
+          .fail(function(){
+            showMSG("commitOrder", "fail", "Order commit failed.");
+          });
+      }
+
+      // A $( document ).ready() block.
+      function refresh() {
+        $.get("/api/v1/accounts", function(data) {
+          tableRender(data, $("#account-table"));
+        });
+        $.get("/api/v1/storages", function(data) {
+          tableRender(data, $("#storage-table"));
+        });
+        $.get("/api/v1/orders", function(data) {
+          tableRender(data, $("#order-table"));
+        });
+      }
+      $(document).ready(function() {
+        refresh();
+      });
+    </script>
+  </body>
+
+</html>

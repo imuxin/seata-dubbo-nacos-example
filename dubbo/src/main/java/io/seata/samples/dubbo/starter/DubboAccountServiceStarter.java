@@ -34,7 +34,7 @@ public class DubboAccountServiceStarter {
         accountContext.getBean("accountService");
         JdbcTemplate accountJdbcTemplate = (JdbcTemplate) accountContext.getBean("jdbcTemplate");
         accountJdbcTemplate.update("delete from account_tbl where user_id = 'U100001'");
-        accountJdbcTemplate.update("insert into account_tbl(user_id, money) values ('U100001', 999)");
+        accountJdbcTemplate.update("insert into account_tbl(user_id, money) values ('U100001', 2999)");
 
         new ApplicationKeeper(accountContext).keep();
     }

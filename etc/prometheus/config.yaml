@@ -1,0 +1,45 @@
+# 全局配置
+global:
+  # 从各个target上获取监控指标的时间间隔
+  # [ scrape_interval: <duration> | default = 1m ]
+  scrape_interval: 10s
+  # 获取监控指标时超时时间
+  # [ scrape_timeout: <duration> | default = 10s ]
+  scrape_timeout: 5s
+  # 评估规则时间间隔
+  # [ evaluation_interval: <duration> | default = 1m ]
+  # 与外部系统通信时对时间序列或者告警信息添加的标签，如remote storage、alertmanager等
+  # external_labels:
+  #   [ <labelname>: <labelvalue> ... ]
+  # PromQL查询日志，reload操作会重新打开日志
+  # [ query_log_file: <string> ]
+
+# # 外部规则文件列表，会从这些文件中读取rules和alerts
+# rule_files:
+#   [ - <filepath_glob> ... ]
+
+# 抓取监控的规则配置
+scrape_configs:
+  - job_name: seata-server
+    scrape_interval: 20s
+    # 抓取的API接口
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ['seata-server:9898']
+
+# # 告警配置
+# alerting:
+#   # 告警标签重写
+#   alert_relabel_configs:
+#     [ - <relabel_config> ... ]
+#   # alertmanager 配置
+#   alertmanagers:
+#     [ - <alertmanager_config> ... ]
+
+# # 可写入的远程存储
+# remote_write:
+#   [ - <remote_write> ... ]
+
+# # 可读取的远程存储
+# remote_read:
+#   [ - <remote_read> ... ]

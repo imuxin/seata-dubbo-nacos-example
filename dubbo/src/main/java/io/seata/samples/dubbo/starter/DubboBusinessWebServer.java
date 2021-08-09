@@ -35,7 +35,7 @@ public class DubboBusinessWebServer {
 		return business.listStorage();
 	}
 
-	@PostMapping("/doBusiness")
+	@PostMapping("/api/v1/doBusiness")
 	public void doBusiness(@RequestParam(value = "userId") String userId,
 			@RequestParam(value = "commodityCode") String commodityCode,
 			@RequestParam(value = "orderCount") int orderCount) {
